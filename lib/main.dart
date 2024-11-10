@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:save_money/constants/app_theme.dart';
 import 'package:save_money/router/router.dart';
 
 void main() {
@@ -13,9 +14,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        useMaterial3: true,
-      ),
+      theme: AppTheme.appTheme,
       routerConfig: ref.watch(routerProvider),
       debugShowCheckedModeBanner: false,
     );
