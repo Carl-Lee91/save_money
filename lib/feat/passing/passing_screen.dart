@@ -23,7 +23,7 @@ class PassingScreen extends ConsumerWidget {
           children: [
             Center(
               child: Text(
-                '요리비책',
+                '거지방',
                 style: TextStyle(
                   color: Colors.black,
                   fontSize: 16,
