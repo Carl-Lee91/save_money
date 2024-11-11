@@ -10,53 +10,49 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
-  late DateTime _selectedDate;
   late DateTime _focusedDate;
-  late Map<DateTime, bool> _expandedWeeks;
+  DateTime? _selectedDate;
+  int? _expandedWeekIndex; // 확장할 주의 인덱스를 저장
+  final Map<DateTime, List<String>> _dummyEvents = {}; // 더미 일정 데이터
 
   @override
   void initState() {
     super.initState();
     _focusedDate = DateTime.now();
-    _selectedDate = DateTime.now();
-    _expandedWeeks = {}; // 날짜별 확장 상태 저장
+    _initializeDummyEvents();
   }
 
-  // 월을 시작하는 날짜와 마지막 날짜 계산
+  void _initializeDummyEvents() {
+    // 달의 모든 날짜에 대한 더미 일정 추가
+    for (int i = 0; i < 31; i++) {
+      final date = DateTime(_focusedDate.year, _focusedDate.month, i + 1);
+      _dummyEvents[date] = ['Event for ${date.day}/${date.month}'];
+    }
+  }
+
   List<DateTime> _getDaysInMonth(DateTime month) {
     final startOfMonth = DateTime(month.year, month.month, 1);
     final endOfMonth = DateTime(month.year, month.month + 1, 0);
-    final daysInMonth = List.generate(
+    return List.generate(
       endOfMonth.day,
       (index) => startOfMonth.add(Duration(days: index)),
     );
-    return daysInMonth;
   }
 
-  // 주를 계산하는 함수 (특정 날짜가 속한 주의 첫 번째 날짜를 계산)
   DateTime _getStartOfWeek(DateTime day) {
-    // 월요일을 주의 시작으로 설정
-    return day.subtract(Duration(days: (day.weekday - 1) % 7));
+    return day.subtract(Duration(days: day.weekday % 7));
   }
 
-  // 주간에 표시할 날짜 계산
-  List<DateTime> _getWeekDates(DateTime day) {
-    final startOfWeek = _getStartOfWeek(day);
-    return List.generate(7, (index) => startOfWeek.add(Duration(days: index)));
-  }
-
-  // 요일 표시를 위한 리스트
   final List<String> _weekdays = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun',
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
+    '토',
+    '일',
   ];
 
-  // 이전, 다음 달의 날짜를 회색으로 처리하기 위한 함수
   bool _isSameMonth(DateTime day) {
     return day.month == _focusedDate.month && day.year == _focusedDate.year;
   }
@@ -64,18 +60,38 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final daysInMonth = _getDaysInMonth(_focusedDate);
-
-    // 첫 번째 날짜가 월요일부터 시작하도록 보정
     final firstDayOfMonth = daysInMonth.first;
     final firstDayOfWeek = _getStartOfWeek(firstDayOfMonth);
 
+    List<List<DateTime>> weeks = [];
+    List<DateTime> currentWeek = [];
+    for (DateTime day = firstDayOfWeek;
+        day.isBefore(daysInMonth.last) || day == daysInMonth.last;
+        day = day.add(const Duration(days: 1))) {
+      currentWeek.add(day);
+      if (currentWeek.length == 7) {
+        weeks.add(currentWeek);
+        currentWeek = [];
+      }
+    }
+    if (currentWeek.isNotEmpty) {
+      weeks.add(currentWeek);
+    }
+
+    if (weeks.isNotEmpty && weeks.last.length < 7) {
+      DateTime lastDayOfMonth = daysInMonth.last;
+      int daysToAdd = 7 - weeks.last.length;
+      DateTime nextMonthDate =
+          DateTime(lastDayOfMonth.year, lastDayOfMonth.month + 1, 1);
+
+      for (int i = 0; i < daysToAdd; i++) {
+        weeks.last.add(nextMonthDate.add(Duration(days: i)));
+      }
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Custom Calendar'),
-      ),
       body: Column(
         children: [
-          // 상단: 현재 월을 표시
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -90,6 +106,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         _focusedDate.month - 1,
                         1,
                       );
+                      _expandedWeekIndex = null;
                     });
                   },
                 ),
@@ -106,14 +123,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         _focusedDate.month + 1,
                         1,
                       );
+                      _expandedWeekIndex = null;
                     });
                   },
                 ),
               ],
             ),
           ),
-
-          // 요일 표시
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: _weekdays.map((weekday) {
@@ -127,73 +143,87 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               );
             }).toList(),
           ),
-
-          // 날짜 그리기
           Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 7, // 7일 기준으로 한 주를 나타냄
-              ),
-              itemCount: (firstDayOfWeek.day == DateTime.monday
-                      ? 0
-                      : (7 - firstDayOfWeek.weekday) % 7) +
-                  daysInMonth.length,
-              itemBuilder: (context, index) {
-                final day = firstDayOfWeek.add(Duration(days: index));
-                final isSelected = _selectedDate == day;
-                final isExpanded =
-                    _expandedWeeks[_getStartOfWeek(day)] ?? false;
-                final isInCurrentMonth = _isSameMonth(day);
+            child: ListView.builder(
+              itemCount: weeks.length,
+              itemBuilder: (context, weekIndex) {
+                final week = weeks[weekIndex];
+                final isExpandedWeek = _expandedWeekIndex == weekIndex;
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedDate = day;
-                      final startOfWeek = _getStartOfWeek(day);
-                      _expandedWeeks[startOfWeek] =
-                          !_expandedWeeks[startOfWeek]!;
-                    });
-                  },
-                  child: Column(
-                    children: [
+                return Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: week.map((day) {
+                        final isSelected = _selectedDate == day;
+                        final isInCurrentMonth = _isSameMonth(day);
+
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              // 선택된 날짜가 이미 선택된 날짜와 동일하면 컨테이너를 숨김
+                              if (_selectedDate == day) {
+                                _selectedDate = null;
+                                _expandedWeekIndex = null;
+                              } else {
+                                _selectedDate = day;
+                                _expandedWeekIndex = weekIndex;
+                              }
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color:
+                                  isSelected ? Colors.blue : Colors.transparent,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: !isInCurrentMonth
+                                    ? Colors.grey.withOpacity(0.5)
+                                    : Colors.transparent,
+                              ),
+                            ),
+                            child: Text(
+                              '${day.day}',
+                              style: TextStyle(
+                                color: isSelected
+                                    ? Colors.white
+                                    : isInCurrentMonth
+                                        ? Colors.black
+                                        : Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    if (isExpandedWeek)
                       Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(8),
-                        margin: const EdgeInsets.all(2),
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue : Colors.transparent,
+                          color: Colors.blue.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: !isInCurrentMonth
-                                ? Colors.grey.withOpacity(0.5)
-                                : Colors.transparent,
-                          ),
                         ),
-                        child: Text(
-                          '${day.day}',
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : isInCurrentMonth
-                                    ? Colors.black
-                                    : Colors.grey,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Events for ${_selectedDate?.day}/${_selectedDate?.month}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            ...(_dummyEvents[_selectedDate] ?? ['No events'])
+                                .map(Text.new),
+                          ],
                         ),
                       ),
-                      if (isExpanded) // 확장되는 UI 표시
-                        Container(
-                          margin: const EdgeInsets.only(top: 8),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'Additional events for ${day.month}/${day.day}',
-                          ),
-                        ),
-                    ],
-                  ),
+                  ],
                 );
               },
             ),
