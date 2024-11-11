@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:save_money/constants/app_colors.dart';
 
 class SocialLoginBtn extends ConsumerWidget {
   const SocialLoginBtn({
@@ -10,12 +9,14 @@ class SocialLoginBtn extends ConsumerWidget {
     required this.btnColor,
     required this.assetsPath,
     required this.isBorder,
+    this.borderColor,
   });
 
   final VoidCallback onTap;
   final Color btnColor;
   final String assetsPath;
   final bool isBorder;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,9 +28,7 @@ class SocialLoginBtn extends ConsumerWidget {
         decoration: BoxDecoration(
           color: btnColor,
           shape: BoxShape.circle,
-          border: isBorder
-              ? Border.all(color: AppColors.lineSubTextColor, width: 1)
-              : null,
+          border: isBorder ? Border.all(color: borderColor!, width: 1) : null,
         ),
         child: Padding(
           padding:
