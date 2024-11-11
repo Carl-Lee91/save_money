@@ -8,10 +8,13 @@ class AppDarkTheme {
     navigationBarTheme: NavigationBarThemeData(
       labelTextStyle: WidgetStateProperty.resolveWith<TextStyle>(
         (Set<WidgetState> states) => states.contains(WidgetState.selected)
-            ? const TextStyle(color: AppColors.primaryColor)
+            ? const TextStyle(color: AppColors.lightPrimaryColor)
             : const TextStyle(color: AppColors.disableColor),
       ),
       backgroundColor: AppColors.whiteColor,
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.darkPrimaryColor,
     ),
     brightness: Brightness.dark,
     textTheme: const TextTheme(
