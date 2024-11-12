@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:save_money/theme/app_colors.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -44,13 +46,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   final List<String> _weekdays = [
+    '일',
     '월',
     '화',
     '수',
     '목',
     '금',
     '토',
-    '일',
   ];
 
   bool _isSameMonth(DateTime day) {
@@ -93,7 +95,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -137,12 +139,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 child: Center(
                   child: Text(
                     weekday,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.disableTextColor,
+                        ),
                   ),
                 ),
               );
             }).toList(),
           ),
+          const Gap(12),
           Expanded(
             child: ListView.builder(
               itemCount: weeks.length,
@@ -158,69 +164,88 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         final isSelected = _selectedDate == day;
                         final isInCurrentMonth = _isSameMonth(day);
 
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              // 선택된 날짜가 이미 선택된 날짜와 동일하면 컨테이너를 숨김
-                              if (_selectedDate == day) {
-                                _selectedDate = null;
-                                _expandedWeekIndex = null;
-                              } else {
-                                _selectedDate = day;
-                                _expandedWeekIndex = weekIndex;
-                              }
-                            });
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(8),
-                            margin: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color:
-                                  isSelected ? Colors.blue : Colors.transparent,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: !isInCurrentMonth
-                                    ? Colors.grey.withOpacity(0.5)
+                        return Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                // 선택된 날짜가 이미 선택된 날짜와 동일하면 컨테이너를 숨김
+                                if (_selectedDate == day) {
+                                  _selectedDate = null;
+                                  _expandedWeekIndex = null;
+                                } else {
+                                  _selectedDate = day;
+                                  _expandedWeekIndex = weekIndex;
+                                }
+                              });
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              padding: const EdgeInsets.all(8),
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: isSelected
+                                    ? Colors.blue
                                     : Colors.transparent,
                               ),
-                            ),
-                            child: Text(
-                              '${day.day}',
-                              style: TextStyle(
-                                color: isSelected
-                                    ? Colors.white
+                              child: Text(
+                                '${day.day}',
+                                style: isSelected
+                                    ? Theme.of(context)
+                                        .textTheme
+                                        .bodyLarge!
+                                        .copyWith(
+                                          color: AppColors.whiteColor,
+                                        )
                                     : isInCurrentMonth
-                                        ? Colors.black
-                                        : Colors.grey,
+                                        ? Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(
+                                              color: AppColors.mainTextColor,
+                                            )
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge!
+                                            .copyWith(
+                                              color: AppColors.disableTextColor,
+                                            ),
                               ),
                             ),
                           ),
                         );
                       }).toList(),
                     ),
+                    const Gap(2),
                     if (isExpandedWeek)
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Events for ${_selectedDate?.day}/${_selectedDate?.month}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.backgroundColor,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              width: 1,
+                              color: AppColors.lineSubTextColor,
                             ),
-                            const SizedBox(height: 8),
-                            ...(_dummyEvents[_selectedDate] ?? ['No events'])
-                                .map(Text.new),
-                          ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Events for ${_selectedDate?.day}/${_selectedDate?.month}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              ...(_dummyEvents[_selectedDate] ?? ['No events'])
+                                  .map(Text.new),
+                            ],
+                          ),
                         ),
                       ),
                   ],
