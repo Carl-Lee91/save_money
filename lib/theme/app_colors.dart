@@ -11,4 +11,6 @@ class AppColors {
   static const kakaoLoginColor = Color(0xFFFDE500);
   static const appleLoginColor = Color(0xFF010101);
   static const mainTextColor = Color(0xFF212121);
+  static const disableTextColor = Color(0xFFA1A1AA);
+  static const backgroundColor = Color(0xFFFAFAFA);
 }
