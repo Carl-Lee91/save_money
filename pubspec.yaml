@@ -30,6 +30,8 @@ dependencies:
   freezed: ^2.5.7
   supabase_flutter: ^2.8.0
   flutter_svg: ^2.0.14
+  kakao_flutter_sdk: ^1.9.6
+  flutter_secure_storage: ^4.2.1
 
 dev_dependencies:
   flutter_test:
