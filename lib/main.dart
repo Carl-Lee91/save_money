@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:save_money/public_method/public_method.dart';
 import 'package:save_money/router/router.dart';
 import 'package:save_money/theme/app_dark_theme.dart';
@@ -12,6 +14,10 @@ void main() async {
   await PublicMethod.preferenceinit();
 
   PublicMethod.secureStorageInit();
+
+  await dotenv.load(fileName: '.env');
+
+  KakaoSdk.init(nativeAppKey: dotenv.get('KAKAO_API_KEY').toString());
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
