@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:save_money/feat/global_widget/app_bar/app_bar.dart';
-import 'package:save_money/feat/homepage/homepage_screen.dart';
-import 'package:save_money/feat/homepage/widgets/calender.dart';
+import 'package:save_money/feat/homepage/homepage_view.dart';
+import 'package:save_money/feat/record/record_view.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   static const String routeName = 'mainNavigation';
@@ -39,11 +39,11 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
         children: [
           Offstage(
             offstage: _selectedIndex != 0,
-            child: const HomePageScreen(),
+            child: const HomePageView(),
           ),
           Offstage(
             offstage: _selectedIndex != 1,
-            child: const CalendarScreen(),
+            child: const RecordView(),
           ),
         ],
       ),

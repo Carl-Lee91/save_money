@@ -1,26 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:save_money/feat/homepage/widgets/calender_widget.dart';
 
-class HomePageScreen extends ConsumerStatefulWidget {
+class HomePageView extends ConsumerStatefulWidget {
   static const String routeName = 'home';
   static const String routeUrl = '/home';
 
-  const HomePageScreen({super.key});
+  const HomePageView({super.key});
 
   @override
-  ConsumerState<HomePageScreen> createState() => _HomePageState();
+  ConsumerState<HomePageView> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePageScreen> {
+class _HomePageState extends ConsumerState<HomePageView> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Padding(
-              padding: EdgeInsets.all(16),
-            ),
+            CalenderWidget(),
           ],
         ),
       ),

@@ -4,14 +4,14 @@ import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:save_money/theme/app_colors.dart';
 
-class CalendarScreen extends ConsumerStatefulWidget {
-  const CalendarScreen({super.key});
+class CalenderWidget extends ConsumerStatefulWidget {
+  const CalenderWidget({super.key});
 
   @override
-  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
+  ConsumerState<CalenderWidget> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends ConsumerState<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalenderWidget> {
   late DateTime _focusedDate;
   DateTime? _selectedDate;
   int? _expandedWeekIndex; // 확장할 주의 인덱스를 저장
