@@ -23,7 +23,7 @@ final routerProvider = Provider(
               const CupertinoPage(child: PassingScreen()),
         ),
         GoRoute(
-          path: '/:tab(home|budget)',
+          path: '/:tab(home|record)',
           name: MainNavigation.routeName,
           pageBuilder: (context, state) {
             final tab = state.pathParameters['tab']!;

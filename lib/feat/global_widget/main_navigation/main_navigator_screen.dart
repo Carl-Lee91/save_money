@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:save_money/feat/dashboard/homepage/homepage_view.dart';
+import 'package:save_money/feat/dashboard/record/record_view.dart';
 import 'package:save_money/feat/global_widget/app_bar/app_bar.dart';
-import 'package:save_money/feat/homepage/homepage_view.dart';
-import 'package:save_money/feat/record/record_view.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   static const String routeName = 'mainNavigation';
@@ -21,7 +21,7 @@ class MainNavigation extends ConsumerStatefulWidget {
 }
 
 class _MainNavigationState extends ConsumerState<MainNavigation> {
-  final List<String> _tabs = ['home', 'budget'];
+  final List<String> _tabs = ['home', 'record'];
 
   late int _selectedIndex = _tabs.indexOf(widget.tab);
 
