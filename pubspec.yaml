@@ -53,6 +53,7 @@ flutter:
     - assets/svg/navigation/
     - assets/svg/app_bar/
     - assets/svg/login/
+    - assets/svg/dashboard/
     - .env
 
   fonts:
