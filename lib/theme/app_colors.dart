@@ -13,4 +13,5 @@ class AppColors {
   static const mainTextColor = Color(0xFF212121);
   static const disableTextColor = Color(0xFFA1A1AA);
   static const backgroundColor = Color(0xFFFAFAFA);
+  static const darkCardColor = Color(0xFF333333);
 }
