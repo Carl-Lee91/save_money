@@ -52,6 +52,8 @@ class _HomePageState extends ConsumerState<HomePageView> {
             ArrowRowWidget(
               leftGap: 8,
               rightGap: 8,
+              leftOnTap: () {},
+              rightOnTap: () {},
               contextWidget: Text(
                 '$_selectMonth월',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
