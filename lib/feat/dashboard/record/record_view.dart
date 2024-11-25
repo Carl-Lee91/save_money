@@ -24,29 +24,41 @@ class RecordView extends ConsumerWidget {
   }
 
   Widget _homeTop(BuildContext context) {
-    return Container(
-      color: ThemeMode.system == ThemeMode.dark
-          ? AppColors.darkPrimaryColor
-          : AppColors.lightPrimaryColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Gap(30),
-            const Text('이번달 소비 목표를\n설정해 주세요'),
-            const Gap(30),
-            RecBtn(
-              onTap: () {},
-              backgroundColor: ThemeMode.system == ThemeMode.dark
-                  ? AppColors.mainTextColor
-                  : AppColors.whiteColor,
-              contextWidget: const Text('소비목표 설정하기'),
+    return Stack(
+      children: [
+        Container(
+          color: ThemeMode.system == ThemeMode.dark
+              ? AppColors.darkPrimaryColor
+              : AppColors.lightPrimaryColor,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Gap(30),
+                const Text('이번달 소비 목표를\n설정해 주세요'),
+                const Gap(30),
+                RecBtn(
+                  onTap: () {},
+                  backgroundColor: ThemeMode.system == ThemeMode.dark
+                      ? AppColors.mainTextColor
+                      : AppColors.whiteColor,
+                  contextWidget: const Text('소비목표 설정하기'),
+                ),
+                const Gap(20),
+              ],
             ),
-            const Gap(20),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          right: 23,
+          child: Image.asset(
+            'assets/images/small_dollar.png',
+            width: 134,
+            height: 73,
+          ),
+        ),
+      ],
     );
   }
 }
