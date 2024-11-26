@@ -8,7 +8,7 @@ import 'package:save_money/feat/passing/passing_screen.dart';
 final routerProvider = Provider(
   (ref) {
     return GoRouter(
-      initialLocation: SocialLoginView.routeUrl,
+      initialLocation: PassingScreen.routeUrl,
       routes: [
         GoRoute(
           name: SocialLoginView.routeName,
