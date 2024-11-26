@@ -91,170 +91,170 @@ class _CalendarScreenState extends ConsumerState<CalenderWidget> {
       }
     }
 
-    return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_left),
-                  onPressed: () {
-                    setState(() {
-                      _focusedDate = DateTime(
-                        _focusedDate.year,
-                        _focusedDate.month - 1,
-                        1,
-                      );
-                      _expandedWeekIndex = null;
-                    });
-                  },
-                ),
-                Text(
-                  DateFormat.yMMMM().format(_focusedDate),
-                  style: const TextStyle(fontSize: 20),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_right),
-                  onPressed: () {
-                    setState(() {
-                      _focusedDate = DateTime(
-                        _focusedDate.year,
-                        _focusedDate.month + 1,
-                        1,
-                      );
-                      _expandedWeekIndex = null;
-                    });
-                  },
-                ),
-              ],
-            ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_left),
+                onPressed: () {
+                  setState(() {
+                    _focusedDate = DateTime(
+                      _focusedDate.year,
+                      _focusedDate.month - 1,
+                      1,
+                    );
+                    _expandedWeekIndex = null;
+                  });
+                },
+              ),
+              Text(
+                DateFormat.yMMMM().format(_focusedDate),
+                style: const TextStyle(fontSize: 20),
+              ),
+              IconButton(
+                icon: const Icon(Icons.arrow_right),
+                onPressed: () {
+                  setState(() {
+                    _focusedDate = DateTime(
+                      _focusedDate.year,
+                      _focusedDate.month + 1,
+                      1,
+                    );
+                    _expandedWeekIndex = null;
+                  });
+                },
+              ),
+            ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _weekdays.map((weekday) {
-              return Expanded(
-                child: Center(
-                  child: Text(
-                    weekday,
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontWeight: FontWeight.w400,
-                          color: AppColors.disableTextColor,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: _weekdays.map((weekday) {
+            return Expanded(
+              child: Center(
+                child: Text(
+                  weekday,
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w400,
+                        color: AppColors.disableTextColor,
+                      ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        const Gap(12),
+        SizedBox(
+          height: 400,
+          child: ListView.builder(
+            shrinkWrap: true,
+            primary: false,
+            itemCount: weeks.length,
+            itemBuilder: (context, weekIndex) {
+              final week = weeks[weekIndex];
+              final isExpandedWeek = _expandedWeekIndex == weekIndex;
+
+              return Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: week.map((day) {
+                      final isSelected = _selectedDate == day;
+                      final isInCurrentMonth = _isSameMonth(day);
+
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              // 선택된 날짜가 이미 선택된 날짜와 동일하면 컨테이너를 숨김
+                              if (_selectedDate == day) {
+                                _selectedDate = null;
+                                _expandedWeekIndex = null;
+                              } else {
+                                _selectedDate = day;
+                                _expandedWeekIndex = weekIndex;
+                              }
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.all(8),
+                            margin: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color:
+                                  isSelected ? Colors.blue : Colors.transparent,
+                            ),
+                            child: Text(
+                              '${day.day}',
+                              style: isSelected
+                                  ? Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge!
+                                      .copyWith(
+                                        color: AppColors.whiteColor,
+                                      )
+                                  : isInCurrentMonth
+                                      ? Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(
+                                            color: AppColors.mainTextColor,
+                                          )
+                                      : Theme.of(context)
+                                          .textTheme
+                                          .bodyLarge!
+                                          .copyWith(
+                                            color: AppColors.disableTextColor,
+                                          ),
+                            ),
+                          ),
                         ),
+                      );
+                    }).toList(),
                   ),
-                ),
-              );
-            }).toList(),
-          ),
-          const Gap(12),
-          Expanded(
-            child: ListView.builder(
-              itemCount: weeks.length,
-              itemBuilder: (context, weekIndex) {
-                final week = weeks[weekIndex];
-                final isExpandedWeek = _expandedWeekIndex == weekIndex;
-
-                return Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: week.map((day) {
-                        final isSelected = _selectedDate == day;
-                        final isInCurrentMonth = _isSameMonth(day);
-
-                        return Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                // 선택된 날짜가 이미 선택된 날짜와 동일하면 컨테이너를 숨김
-                                if (_selectedDate == day) {
-                                  _selectedDate = null;
-                                  _expandedWeekIndex = null;
-                                } else {
-                                  _selectedDate = day;
-                                  _expandedWeekIndex = weekIndex;
-                                }
-                              });
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.all(8),
-                              margin: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: isSelected
-                                    ? Colors.blue
-                                    : Colors.transparent,
-                              ),
-                              child: Text(
-                                '${day.day}',
-                                style: isSelected
-                                    ? Theme.of(context)
-                                        .textTheme
-                                        .bodyLarge!
-                                        .copyWith(
-                                          color: AppColors.whiteColor,
-                                        )
-                                    : isInCurrentMonth
-                                        ? Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .copyWith(
-                                              color: AppColors.mainTextColor,
-                                            )
-                                        : Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge!
-                                            .copyWith(
-                                              color: AppColors.disableTextColor,
-                                            ),
+                  const Gap(2),
+                  if (isExpandedWeek)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.backgroundColor,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            width: 1,
+                            color: AppColors.lineSubTextColor,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Events for ${_selectedDate?.day}/${_selectedDate?.month}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const Gap(2),
-                    if (isExpandedWeek)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.backgroundColor,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              width: 1,
-                              color: AppColors.lineSubTextColor,
-                            ),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Events for ${_selectedDate?.day}/${_selectedDate?.month}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ...(_dummyEvents[_selectedDate] ?? ['No events'])
-                                  .map(Text.new),
-                            ],
-                          ),
+                            const SizedBox(height: 8),
+                            ...(_dummyEvents[_selectedDate] ?? ['No events'])
+                                .map(Text.new),
+                          ],
                         ),
                       ),
-                  ],
-                );
-              },
-            ),
+                    ),
+                ],
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

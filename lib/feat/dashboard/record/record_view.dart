@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
+import 'package:save_money/feat/dashboard/homepage/widgets/calender_widget.dart';
 import 'package:save_money/feat/dashboard/widget/rec_btn.dart';
 import 'package:save_money/theme/app_colors.dart';
 
@@ -17,6 +18,7 @@ class RecordView extends ConsumerWidget {
         child: Column(
           children: [
             _homeTop(context),
+            const CalenderWidget(),
           ],
         ),
       ),
