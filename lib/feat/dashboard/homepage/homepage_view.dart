@@ -26,14 +26,12 @@ class _HomePageState extends ConsumerState<HomePageView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _homeTop(context),
-            const CalenderWidget(),
-          ],
-        ),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _homeTop(context),
+          const CalenderWidget(),
+        ],
       ),
     );
   }
@@ -76,7 +74,7 @@ class _HomePageState extends ConsumerState<HomePageView> {
           ),
         ),
         Positioned(
-          right: 16,
+          right: 30,
           child: Image.asset(
             'assets/images/big_dollar.png',
             width: 151,
