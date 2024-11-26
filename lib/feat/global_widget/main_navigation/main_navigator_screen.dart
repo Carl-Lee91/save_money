@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:save_money/feat/dashboard/homepage/homepage_view.dart';
 import 'package:save_money/feat/dashboard/record/record_view.dart';
 import 'package:save_money/feat/global_widget/app_bar/app_bar.dart';
+import 'package:save_money/feat/global_widget/bottom_navigation_bar.dart/bottom_navigation_bar.dart';
 
 class MainNavigation extends ConsumerStatefulWidget {
   static const String routeName = 'mainNavigation';
@@ -47,42 +47,9 @@ class _MainNavigationState extends ConsumerState<MainNavigation> {
           ),
         ],
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 12, 12, 30),
-        child: NavigationBar(
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          indicatorColor: Colors.transparent,
-          selectedIndex: _selectedIndex,
-          onDestinationSelected: _onTap,
-          destinations: [
-            NavigationDestination(
-              selectedIcon: SvgPicture.asset(
-                'assets/svg/navigation/home_enable.svg',
-                width: 24,
-                height: 24,
-              ),
-              icon: SvgPicture.asset(
-                'assets/svg/navigation/home_disable.svg',
-                width: 24,
-                height: 24,
-              ),
-              label: '홈',
-            ),
-            NavigationDestination(
-              selectedIcon: SvgPicture.asset(
-                'assets/svg/navigation/edit_enable.svg',
-                width: 24,
-                height: 24,
-              ),
-              icon: SvgPicture.asset(
-                'assets/svg/navigation/edit_disable.svg',
-                width: 24,
-                height: 24,
-              ),
-              label: '예산',
-            ),
-          ],
-        ),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        onTap: _onTap,
+        selectedIndex: _selectedIndex,
       ),
     );
   }
