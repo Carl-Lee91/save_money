@@ -60,19 +60,25 @@ class ArrowRowWidget extends ConsumerWidget {
                 : AppColors.lineSubTextColor,
           ),
           borderRadius: BorderRadius.circular(8),
-          boxShadow: const [
-            BoxShadow(
-              color: Color(0xFF000000),
-              offset: Offset(0, 1),
-              blurRadius: 2,
-              spreadRadius: 0,
-            ),
-          ],
+          // boxShadow: const [
+          //   BoxShadow(
+          //     color: Color(0xFF000000),
+          //     offset: Offset(0, 1),
+          //     blurRadius: 2,
+          //     spreadRadius: 0,
+          //   ),
+          // ],
           color: ThemeMode.system == ThemeMode.dark
               ? AppColors.darkCardColor
               : AppColors.whiteColor,
         ),
-        child: SvgPicture.asset('assets/svg/dashboard/$svgAsset'),
+        child: Padding(
+          padding: const EdgeInsets.all(6),
+          child: SvgPicture.asset(
+            'assets/svg/dashboard/$svgAsset',
+            width: 16,
+          ),
+        ),
       ),
     );
   }
