@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:save_money/feat/dashboard/homepage/widgets/calender_widget.dart';
 import 'package:save_money/feat/dashboard/widget/rec_btn.dart';
 import 'package:save_money/theme/app_colors.dart';
 
@@ -18,7 +17,6 @@ class RecordView extends ConsumerWidget {
         child: Column(
           children: [
             _homeTop(context),
-            const CalenderWidget(),
           ],
         ),
       ),
@@ -38,14 +36,27 @@ class RecordView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Gap(30),
-                const Text('이번달 소비 목표를\n설정해 주세요'),
+                Text(
+                  '이번달 소비 목표를\n설정해 주세요',
+                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 22,
+                        color: AppColors.whiteColor,
+                      ),
+                ),
                 const Gap(30),
                 RecBtn(
                   onTap: () {},
                   backgroundColor: ThemeMode.system == ThemeMode.dark
                       ? AppColors.mainTextColor
                       : AppColors.whiteColor,
-                  contextWidget: const Text('소비목표 설정하기'),
+                  contextWidget: Text(
+                    '소비목표 설정하기',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontSize: 14,
+                          color: AppColors.lightPrimaryColor,
+                        ),
+                  ),
                 ),
                 const Gap(20),
               ],
@@ -54,6 +65,7 @@ class RecordView extends ConsumerWidget {
         ),
         Positioned(
           right: 23,
+          top: 24,
           child: Image.asset(
             'assets/images/small_dollar.png',
             width: 134,
