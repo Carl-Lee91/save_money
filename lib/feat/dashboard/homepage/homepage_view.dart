@@ -16,12 +16,32 @@ class HomePageView extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePageView> {
-  late int _selectMonth;
+  late DateTime _focusedDate;
 
   @override
   void initState() {
     super.initState();
-    _selectMonth = DateTime.now().month;
+    _focusedDate = DateTime.now();
+  }
+
+  void _beforeMonth() {
+    setState(() {
+      _focusedDate = DateTime(
+        _focusedDate.year,
+        _focusedDate.month - 1,
+        1,
+      );
+    });
+  }
+
+  void _nextMonth() {
+    setState(() {
+      _focusedDate = DateTime(
+        _focusedDate.year,
+        _focusedDate.month + 1,
+        1,
+      );
+    });
   }
 
   @override
@@ -30,7 +50,10 @@ class _HomePageState extends ConsumerState<HomePageView> {
       child: Column(
         children: [
           _homeTop(context),
-          const CalenderWidget(),
+          const Gap(20),
+          CalenderWidget(
+            focusedDate: _focusedDate,
+          ),
         ],
       ),
     );
@@ -52,10 +75,10 @@ class _HomePageState extends ConsumerState<HomePageView> {
                 ArrowRowWidget(
                   leftGap: 8,
                   rightGap: 8,
-                  leftOnTap: () {},
-                  rightOnTap: () {},
+                  leftOnTap: _beforeMonth, // 이전 월로 이동
+                  rightOnTap: _nextMonth, // 다음 월로 이동
                   contextWidget: Text(
-                    '$_selectMonth월',
+                    '${_focusedDate.month}월',
                     style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                           fontWeight: FontWeight.w700,
                           fontSize: 20,
@@ -64,21 +87,66 @@ class _HomePageState extends ConsumerState<HomePageView> {
                   ),
                 ),
                 const Gap(16),
-                const Text('이번달 소비 목표보다\n12만원 더 썼어요'),
+                Text.rich(
+                  TextSpan(
+                    text: '이번달 소비 목표보다',
+                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 22,
+                          color: AppColors.whiteColor,
+                        ),
+                    children: [
+                      TextSpan(
+                        text: '\n12만원',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22,
+                              color: const Color(0xFFF2C94C),
+                            ),
+                      ),
+                      TextSpan(
+                        text: ' 더 썼어요',
+                        style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 22,
+                              color: AppColors.whiteColor,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
                 const Gap(16),
-                _budget(title: '수입', money: '3,000,000원'),
-                _budget(title: '지출', money: '-700,000원'),
+                _budget(
+                  title: '수입',
+                  money: '3,000,000원',
+                  moneyTextStyle:
+                      Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.whiteColor,
+                          ),
+                ),
+                _budget(
+                  title: '지출',
+                  money: '-700,000원',
+                  moneyTextStyle:
+                      Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFFF2C94C),
+                          ),
+                ),
                 const Gap(30),
               ],
             ),
           ),
         ),
         Positioned(
-          right: 30,
+          right: 16,
+          bottom: 22,
           child: Image.asset(
             'assets/images/big_dollar.png',
             width: 151,
-            height: 107,
           ),
         ),
       ],
@@ -88,12 +156,22 @@ class _HomePageState extends ConsumerState<HomePageView> {
   Widget _budget({
     required String title,
     required String money,
+    required TextStyle moneyTextStyle,
   }) {
     return Row(
       children: [
-        Text(title),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                fontSize: 18,
+                color: AppColors.whiteColor,
+              ),
+        ),
         const Gap(4),
-        Text(money),
+        Text(
+          money,
+          style: moneyTextStyle,
+        ),
       ],
     );
   }

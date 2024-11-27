@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:save_money/theme/app_colors.dart';
 
 class CalenderWidget extends ConsumerStatefulWidget {
-  const CalenderWidget({super.key});
+  const CalenderWidget({
+    super.key,
+    required this.focusedDate,
+  });
+
+  final DateTime focusedDate;
 
   @override
   ConsumerState<CalenderWidget> createState() => _CalendarScreenState();
 }
 
 class _CalendarScreenState extends ConsumerState<CalenderWidget> {
-  late DateTime _focusedDate;
   DateTime? _selectedDate;
   int? _expandedWeekIndex; // 확장할 주의 인덱스를 저장
   final Map<DateTime, List<String>> _dummyEvents = {}; // 더미 일정 데이터
@@ -20,14 +23,14 @@ class _CalendarScreenState extends ConsumerState<CalenderWidget> {
   @override
   void initState() {
     super.initState();
-    _focusedDate = DateTime.now();
     _initializeDummyEvents();
   }
 
   void _initializeDummyEvents() {
     // 달의 모든 날짜에 대한 더미 일정 추가
     for (int i = 0; i < 31; i++) {
-      final date = DateTime(_focusedDate.year, _focusedDate.month, i + 1);
+      final date =
+          DateTime(widget.focusedDate.year, widget.focusedDate.month, i + 1);
       _dummyEvents[date] = ['Event for ${date.day}/${date.month}'];
     }
   }
@@ -56,12 +59,13 @@ class _CalendarScreenState extends ConsumerState<CalenderWidget> {
   ];
 
   bool _isSameMonth(DateTime day) {
-    return day.month == _focusedDate.month && day.year == _focusedDate.year;
+    return day.month == widget.focusedDate.month &&
+        day.year == widget.focusedDate.year;
   }
 
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = _getDaysInMonth(_focusedDate);
+    final daysInMonth = _getDaysInMonth(widget.focusedDate);
     final firstDayOfMonth = daysInMonth.first;
     final firstDayOfWeek = _getStartOfWeek(firstDayOfMonth);
 
@@ -93,44 +97,6 @@ class _CalendarScreenState extends ConsumerState<CalenderWidget> {
 
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_left),
-                onPressed: () {
-                  setState(() {
-                    _focusedDate = DateTime(
-                      _focusedDate.year,
-                      _focusedDate.month - 1,
-                      1,
-                    );
-                    _expandedWeekIndex = null;
-                  });
-                },
-              ),
-              Text(
-                DateFormat.yMMMM().format(_focusedDate),
-                style: const TextStyle(fontSize: 20),
-              ),
-              IconButton(
-                icon: const Icon(Icons.arrow_right),
-                onPressed: () {
-                  setState(() {
-                    _focusedDate = DateTime(
-                      _focusedDate.year,
-                      _focusedDate.month + 1,
-                      1,
-                    );
-                    _expandedWeekIndex = null;
-                  });
-                },
-              ),
-            ],
-          ),
-        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: _weekdays.map((weekday) {
