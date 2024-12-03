@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:save_money/feat/auth/view/widgets/social_login_btn.dart';
 import 'package:save_money/feat/passing/passing_screen.dart';
@@ -133,9 +134,9 @@ class SocialLoginView extends ConsumerWidget {
 
         final Map<String, dynamic> profileInfo = response.data;
 
-        print(profileInfo);
+        final String userID = profileInfo['id'].toString();
 
-        final int? userID = profileInfo['id'];
+        prefs.setString('userID', userID);
 
         await secureStorage.write(
           key: 'kakaoAccessToken',
@@ -145,8 +146,38 @@ class SocialLoginView extends ConsumerWidget {
           key: 'kakaoRefreshToken',
           value: token.refreshToken,
         );
+
+        if (!context.mounted) return;
+
+        context.goNamed(PassingScreen.routeName);
       } catch (error) {
         debugPrint('카카오 로그인 중 에러가 일어났습니다. 에러내역: $error');
+      }
+    }
+
+    /* 구글 로그인 */
+    Future<void> signInGoogle() async {
+      try {
+        final GoogleSignIn googleSignIn =
+            GoogleSignIn(scopes: ['profile', 'email']);
+        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+        final GoogleSignInAuthentication? googleAuth =
+            await googleUser?.authentication;
+
+        String userID = googleUser!.id;
+
+        prefs.setString('userID', userID);
+
+        await secureStorage.write(
+          key: 'googleAccessToken',
+          value: googleAuth!.idToken,
+        );
+
+        if (!context.mounted) return;
+
+        context.goNamed(PassingScreen.routeName);
+      } catch (error) {
+        debugPrint('구글 로그인 중 에러가 일어났습니다. 상세사유: $error');
       }
     }
 
@@ -179,7 +210,9 @@ class SocialLoginView extends ConsumerWidget {
             ),
             const Gap(20),
             SocialLoginBtn(
-              onTap: () => context.goNamed(PassingScreen.routeName),
+              onTap: () async {
+                await signInGoogle();
+              },
               assetsPath: 'assets/svg/login/google.svg',
               btnColor: AppColors.whiteColor,
               isBorder: true,
