@@ -1,4 +1,4 @@
-package com.save_money
+package com.savemoney
 
 import io.flutter.embedding.android.FlutterActivity
 
