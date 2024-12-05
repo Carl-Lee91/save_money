@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class PassingScreen extends ConsumerWidget {
+class PassingView extends ConsumerWidget {
   static const String routeName = 'passing';
   static const String routeUrl = '/passing';
 
-  const PassingScreen({super.key});
+  const PassingView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
