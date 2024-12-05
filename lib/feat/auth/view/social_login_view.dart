@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:save_money/feat/auth/view/widgets/social_login_btn.dart';
-import 'package:save_money/feat/passing/passing_screen.dart';
+import 'package:save_money/feat/passing/passing_view.dart';
 import 'package:save_money/public_method/public_method.dart';
 import 'package:save_money/theme/app_colors.dart';
 
@@ -137,6 +137,7 @@ class SocialLoginView extends ConsumerWidget {
         final String userID = profileInfo['id'].toString();
 
         prefs.setString('userID', userID);
+        prefs.setString('platform', 'kakao');
 
         await secureStorage.write(
           key: 'kakaoAccessToken',
@@ -149,7 +150,7 @@ class SocialLoginView extends ConsumerWidget {
 
         if (!context.mounted) return;
 
-        context.goNamed(PassingScreen.routeName);
+        context.goNamed(PassingView.routeName);
       } catch (error) {
         debugPrint('카카오 로그인 중 에러가 일어났습니다. 에러내역: $error');
       }
@@ -167,6 +168,7 @@ class SocialLoginView extends ConsumerWidget {
         String userID = googleUser!.id;
 
         prefs.setString('userID', userID);
+        prefs.setString('platform', 'google');
 
         await secureStorage.write(
           key: 'googleAccessToken',
@@ -175,7 +177,7 @@ class SocialLoginView extends ConsumerWidget {
 
         if (!context.mounted) return;
 
-        context.goNamed(PassingScreen.routeName);
+        context.goNamed(PassingView.routeName);
       } catch (error) {
         debugPrint('구글 로그인 중 에러가 일어났습니다. 상세사유: $error');
       }
@@ -222,14 +224,14 @@ class SocialLoginView extends ConsumerWidget {
             if (deviceApple)
               ThemeMode.system == ThemeMode.dark
                   ? SocialLoginBtn(
-                      onTap: () => context.goNamed(PassingScreen.routeName),
+                      onTap: () => context.goNamed(PassingView.routeName),
                       assetsPath: 'assets/svg/login/apple.svg',
                       btnColor: AppColors.appleLoginColor,
                       isBorder: true,
                       borderColor: AppColors.subText2Color,
                     )
                   : SocialLoginBtn(
-                      onTap: () => context.goNamed(PassingScreen.routeName),
+                      onTap: () => context.goNamed(PassingView.routeName),
                       assetsPath: 'assets/svg/login/apple.svg',
                       btnColor: AppColors.appleLoginColor,
                       isBorder: false,
