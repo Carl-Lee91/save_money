@@ -1,15 +1,12 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:save_money/feat/auth/view/widgets/social_login_btn.dart';
+import 'package:save_money/feat/auth/view_model/social_login_view_model.dart';
 import 'package:save_money/feat/passing/passing_view.dart';
-import 'package:save_money/public_method/public_method.dart';
 import 'package:save_money/theme/app_colors.dart';
 
 class SocialLoginView extends ConsumerWidget {
@@ -20,6 +17,25 @@ class SocialLoginView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loginState = ref.watch(socialLoginProvider);
+
+    ref.listen<AsyncValue<void>>(
+      socialLoginProvider,
+      (previous, next) {
+        if (next.hasError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('에러 발생: ${next.error}')),
+          );
+        } else if (next.isLoading) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('처리 중...')),
+          );
+        } else {
+          context.goNamed(PassingView.routeName);
+        }
+      },
+    );
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -30,7 +46,7 @@ class SocialLoginView extends ConsumerWidget {
             const Gap(8),
             _imagePart(),
             const Spacer(),
-            _socialLoginPart(context),
+            _socialLoginPart(context, ref, loginState),
             const Gap(120),
           ],
         ),
@@ -105,83 +121,12 @@ class SocialLoginView extends ConsumerWidget {
     );
   }
 
-  Widget _socialLoginPart(BuildContext context) {
+  Widget _socialLoginPart(
+    BuildContext context,
+    WidgetRef ref,
+    AsyncValue<void> loginState,
+  ) {
     bool deviceApple = Platform.isIOS;
-
-    Future<void> signInKakao() async {
-      try {
-        final dio = Dio();
-
-        bool isInstalled = await isKakaoTalkInstalled();
-        OAuthToken token;
-        if (isInstalled) {
-          try {
-            token = await UserApi.instance.loginWithKakaoTalk();
-          } catch (e) {
-            token = await UserApi.instance.loginWithKakaoAccount();
-          }
-        } else {
-          token = await UserApi.instance.loginWithKakaoAccount();
-        }
-        final response = await dio.post(
-          'https://kapi.kakao.com/v2/user/me',
-          options: Options(
-            headers: {
-              HttpHeaders.authorizationHeader: 'Bearer ${token.accessToken}',
-            },
-          ),
-        );
-
-        final Map<String, dynamic> profileInfo = response.data;
-
-        final String userID = profileInfo['id'].toString();
-
-        prefs.setString('userID', userID);
-        prefs.setString('platform', 'kakao');
-
-        await secureStorage.write(
-          key: 'kakaoAccessToken',
-          value: token.accessToken,
-        );
-        await secureStorage.write(
-          key: 'kakaoRefreshToken',
-          value: token.refreshToken,
-        );
-
-        if (!context.mounted) return;
-
-        context.goNamed(PassingView.routeName);
-      } catch (error) {
-        debugPrint('카카오 로그인 중 에러가 일어났습니다. 에러내역: $error');
-      }
-    }
-
-    /* 구글 로그인 */
-    Future<void> signInGoogle() async {
-      try {
-        final GoogleSignIn googleSignIn =
-            GoogleSignIn(scopes: ['profile', 'email']);
-        final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-        final GoogleSignInAuthentication? googleAuth =
-            await googleUser?.authentication;
-
-        String userID = googleUser!.id;
-
-        prefs.setString('userID', userID);
-        prefs.setString('platform', 'google');
-
-        await secureStorage.write(
-          key: 'googleAccessToken',
-          value: googleAuth!.idToken,
-        );
-
-        if (!context.mounted) return;
-
-        context.goNamed(PassingView.routeName);
-      } catch (error) {
-        debugPrint('구글 로그인 중 에러가 일어났습니다. 상세사유: $error');
-      }
-    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,45 +144,39 @@ class SocialLoginView extends ConsumerWidget {
           ),
         ),
         const Gap(16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SocialLoginBtn(
-              onTap: () async {
-                await signInKakao();
-              },
-              assetsPath: 'assets/svg/login/kakao.svg',
-              btnColor: AppColors.kakaoLoginColor,
-              isBorder: false,
-            ),
-            const Gap(20),
-            SocialLoginBtn(
-              onTap: () async {
-                await signInGoogle();
-              },
-              assetsPath: 'assets/svg/login/google.svg',
-              btnColor: AppColors.whiteColor,
-              isBorder: true,
-              borderColor: AppColors.lineSubTextColor,
-            ),
-            const Gap(20),
-            if (deviceApple)
-              ThemeMode.system == ThemeMode.dark
-                  ? SocialLoginBtn(
-                      onTap: () => context.goNamed(PassingView.routeName),
-                      assetsPath: 'assets/svg/login/apple.svg',
-                      btnColor: AppColors.appleLoginColor,
-                      isBorder: true,
-                      borderColor: AppColors.subText2Color,
-                    )
-                  : SocialLoginBtn(
-                      onTap: () => context.goNamed(PassingView.routeName),
-                      assetsPath: 'assets/svg/login/apple.svg',
-                      btnColor: AppColors.appleLoginColor,
-                      isBorder: false,
-                    ),
-          ],
-        ),
+        if (loginState.isLoading)
+          const Center(child: CircularProgressIndicator())
+        else
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SocialLoginBtn(
+                onTap: () =>
+                    ref.read(socialLoginProvider.notifier).signInKakao(),
+                assetsPath: 'assets/svg/login/kakao.svg',
+                btnColor: AppColors.kakaoLoginColor,
+                isBorder: false,
+              ),
+              const Gap(20),
+              SocialLoginBtn(
+                onTap: () =>
+                    ref.read(socialLoginProvider.notifier).signInGoogle(),
+                assetsPath: 'assets/svg/login/google.svg',
+                btnColor: AppColors.whiteColor,
+                isBorder: true,
+                borderColor: AppColors.lineSubTextColor,
+              ),
+              const Gap(20),
+              if (deviceApple)
+                SocialLoginBtn(
+                  onTap: () => context.goNamed(PassingView.routeName),
+                  assetsPath: 'assets/svg/login/apple.svg',
+                  btnColor: AppColors.appleLoginColor,
+                  isBorder: true,
+                  borderColor: AppColors.subText2Color,
+                ),
+            ],
+          ),
       ],
     );
   }
