@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:save_money/feat/auth/view/social_login_view.dart';
 import 'package:save_money/feat/global_widget/main_navigation/main_navigator_screen.dart';
 import 'package:save_money/feat/passing/passing_view.dart';
-import 'package:save_money/feat/setting/setting_view.dart';
+import 'package:save_money/feat/setting/view/setting_view.dart';
 import 'package:save_money/public_method/public_method.dart';
 
 final routerProvider = Provider(
